@@ -1,6 +1,6 @@
 module Fluent
   class ParseMultipleValueQueryOutput < Output
-    Fluent::Plugin.register_output('parse_multipe_value_query', self)
+    Fluent::Plugin.register_output('parse_multiple_value_query', self)
 
     config_param :key,                :string
     config_param :tag_prefix,         :string, :default => 'parsed.'
