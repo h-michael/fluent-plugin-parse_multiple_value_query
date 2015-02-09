@@ -1,2 +1,5 @@
+## 0.0.2 (2015/02/07)
+Fix plugin type
+
 ## 0.0.1 (2015/02/07)
 First release
