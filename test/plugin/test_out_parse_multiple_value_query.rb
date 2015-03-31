@@ -149,4 +149,24 @@ class ParseMultipleValueQueryOutTest < Test::Unit::TestCase
     end
   end
 
+    def test_sub_key
+    conf = %[
+      key                 url
+      sub_key             url_parsed
+    ]
+
+    record = {
+      'url' => URL,
+    }
+
+    emits = emit(conf, record)
+
+    emits.each_with_index do |(tag, time, record), i|
+      assert_equal URL,       record['url']
+      assert_equal 'bar',     record['url_parsed']['foo']
+      assert_equal 'qux',     record['url_parsed']['baz']
+      assert_equal ["1", "2", "3"],     record['url_parsed']['multiple']
+    end
+  end
+
 end
