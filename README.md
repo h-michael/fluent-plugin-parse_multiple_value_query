@@ -148,6 +148,28 @@ output
     }
 ```
 
+If you want to parse url withiut host.
+```
+<match foo.**>
+  type parse_multiple_value_query
+  key  url
+  without_host true
+</match>
+
+input
+"test" {
+  "url": "/custom/path?key1[]=value1&key1[]=value2&key1[]=value3&key2[]=value4&key2[]=value5&key3[]="
+}
+
+output
+    "parsed.test" {
+      "url": "/custom/path?key1[]=value1&key1[]=value2&key1[]=value3&key2[]=value4&key2[]=value5&key3[]=",
+      "key1": ["value1", "value2", "value3"],
+      "key2": ["value4", "value5"],
+      "key3": [""]
+    }
+```
+
 ## Option Parameters
 
 ### key :String
@@ -169,6 +191,10 @@ Default value is false.
 
 ### sub_key :String
 You want to put parsed data into separate key.
+Default value is false.
+
+### without_host :Bool
+You want to parse url without host.
 Default value is false.
 
 ## Relative

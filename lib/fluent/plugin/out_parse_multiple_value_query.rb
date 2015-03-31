@@ -6,7 +6,8 @@ module Fluent
     config_param :tag_prefix,         :string, :default => 'parsed.'
     config_param :only_query_string,  :bool, :default => false
     config_param :remove_empty_array, :bool, :default => false
-    config_param :sub_key,                :string, :default => nil
+    config_param :sub_key,            :string, :default => nil
+    config_param :without_host,       :bool, :default => false
 
     def initialize
       super
@@ -50,7 +51,9 @@ module Fluent
           record = parse_query_string(record,record[key])
           return record
         else
-          query = URI.parse(record[key]).query
+          url = without_host ? "http://example.com#{record[key]}" : record[key]
+
+          query = URI.parse(url).query
           record = parse_query_string(record, query)
           return record
         end

@@ -1,3 +1,6 @@
+## 0.0.4 (2015/03/31)
+without_host option
+
 ## 0.0.3 (2015/03/31)
 sub_key option
 

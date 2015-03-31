@@ -9,6 +9,7 @@ class ParseMultipleValueQueryOutTest < Test::Unit::TestCase
   URL_INCLUDE_JP = 'http://example.com:80/?foo=bar&baz=qux&%E3%81%BE%E3%81%84%E3%81%91%E3%82%8B%5B%5D=%E3%82%AD%E3%82%B9%E3%82%AF&%E3%81%BE%E3%81%84%E3%81%91%E3%82%8B%5B%5D=%E3%82%B7%E3%82%A7%E3%83%B3%E3%82%AB%E3%83%BC&%E3%81%BE%E3%81%84%E3%81%91%E3%82%8B%5B%5D=%E3%82%B8%E3%83%A3%E3%82%AF%E3%82%BD%E3%83%B3'
   ONLY_QUERY_STRING_TEST = 'foo=bar&baz=qux&multiple[]=1&multiple[]=2&multiple[]=3&%E3%81%BE%E3%81%84%E3%81%91%E3%82%8B%5B%5D=%E3%82%AD%E3%82%B9%E3%82%AF&%E3%81%BE%E3%81%84%E3%81%91%E3%82%8B%5B%5D=%E3%82%B7%E3%82%A7%E3%83%B3%E3%82%AB%E3%83%BC&%E3%81%BE%E3%81%84%E3%81%91%E3%82%8B%5B%5D=%E3%82%B8%E3%83%A3%E3%82%AF%E3%82%BD%E3%83%B3'
   REMOVE_EMPTY_KEY = 'http://example.com:80/?foo=bar&baz=qux&multiple[]=&%E3%81%BE%E3%81%84%E3%81%91%E3%82%8B%5B%5D=%E3%82%AD%E3%82%B9%E3%82%AF&%E3%81%BE%E3%81%84%E3%81%91%E3%82%8B%5B%5D=%E3%82%B7%E3%82%A7%E3%83%B3%E3%82%AB%E3%83%BC&%E3%81%BE%E3%81%84%E3%81%91%E3%82%8B%5B%5D=%E3%82%B8%E3%83%A3%E3%82%AF%E3%82%BD%E3%83%B3&multiple2[]'
+  WITHOUT_HOST = '/test/url?foo=bar&baz=qux&multiple[]=1&multiple[]=2&multiple[]=3&multiple2[]='
 
   def setup
     Fluent::Test.setup
@@ -149,7 +150,7 @@ class ParseMultipleValueQueryOutTest < Test::Unit::TestCase
     end
   end
 
-    def test_sub_key
+  def test_sub_key
     conf = %[
       key                 url
       sub_key             url_parsed
@@ -167,6 +168,28 @@ class ParseMultipleValueQueryOutTest < Test::Unit::TestCase
       assert_equal 'qux',     record['url_parsed']['baz']
       assert_equal ["1", "2", "3"],     record['url_parsed']['multiple']
     end
+  end
+
+  def test_without_host
+    conf = %[
+      key            url
+      without_host   true
+    ]
+
+    record = {
+      'url' => WITHOUT_HOST,
+    }
+
+    emits = emit(conf, record)
+    
+    emits.each_with_index do |(tag, time, record), i|
+      assert_equal 'parsed.test',              tag
+      assert_equal 'bar',     record['foo']
+      assert_equal 'qux',     record['baz']
+      assert_equal ["1", "2", "3"],     record['multiple']
+      assert_equal [""],      record['multiple2']
+    end
+
   end
 
 end
