@@ -123,6 +123,31 @@ output
       "key2": ["value4", "value5"]
     }
 ```
+
+If you want create sub key with parsed data.
+```
+<match foo.**>
+  type                parse_multiple_value_query
+  key                 url
+  sub_key             url_parsed
+</match>
+
+input
+"test" {
+  "url": "http://example.com?key1[]=value1&key1[]=value2&key1[]=value3&key2[]=value4&key2[]=value5&key3[]="
+}
+
+output
+    "parsed.test" {
+      "url": "http://example.com?key1[]=value1&key1[]=value2&key1[]=value3&key2[]=value4&key2[]=value5&key3[]=",
+      "url_parsed": {
+        "key1": ["value1", "value2", "value3"],
+        "key2": ["value4", "value5"],
+        "key3": [""]
+      }
+    }
+```
+
 ## Option Parameters
 
 ### key :String
@@ -140,6 +165,10 @@ Default value is false.
 ### remove_empty_array :Bool
 You want to remove parsed value that has [] or [""] or [nil].
 You must be this option setting true.
+Default value is false.
+
+### sub_key :String
+You want to put parsed data into separate key.
 Default value is false.
 
 ## Relative
