@@ -6,6 +6,8 @@ module Fluent
     config_param :tag_prefix,         :string, :default => 'parsed.'
     config_param :only_query_string,  :bool, :default => false
     config_param :remove_empty_array, :bool, :default => false
+    config_param :sub_key,            :string, :default => nil
+    config_param :without_host,       :bool, :default => false
 
     def initialize
       super
@@ -49,7 +51,9 @@ module Fluent
           record = parse_query_string(record,record[key])
           return record
         else
-          query = URI.parse(record[key]).query
+          url = without_host ? "http://example.com#{record[key]}" : record[key]
+
+          query = URI.parse(url).query
           record = parse_query_string(record, query)
           return record
         end
@@ -58,19 +62,21 @@ module Fluent
 
     def parse_query_string(record, query_string)
       begin
+        target = sub_key ? (record[sub_key] ||= {}) : record
+
         parsed_query = Rack::Utils.parse_nested_query(query_string)
         parsed_query.each do |key, value|
           if value == ""
-            record[key] = ""
+            target[key] = ""
           else
             if value.class == Array && remove_empty_array
               if value.empty? || value == [""] || value == [nil]
-                record.delete(key)
+                target.delete(key)
               else
-                record[key] = value
+                target[key] = value
               end
             else
-              record[key] = value
+              target[key] = value
             end
           end
         end
