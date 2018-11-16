@@ -1,6 +1,5 @@
 require 'helper'
 require 'rr'
-require 'timecop'
 require 'fluent/plugin/out_parse_multiple_value_query'
 
 class ParseMultipleValueQueryOutTest < Test::Unit::TestCase
@@ -12,11 +11,6 @@ class ParseMultipleValueQueryOutTest < Test::Unit::TestCase
 
   def setup
     Fluent::Test.setup
-    Timecop.freeze(@time)
-  end
-
-  teardown do
-    Timecop.return
   end
 
   def create_driver(conf, tag)
