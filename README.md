@@ -1,4 +1,5 @@
 # Fluent::Plugin::ParseMultipleValueQuery
+[![Build Status](https://travis-ci.org/h-michael/fluent-plugin-parse_multiple_value_query.svg?branch=master)](https://travis-ci.org/h-michael/fluent-plugin-parse_multiple_value_query)
 
 Fluentd plugin to parse URL query parameters with Rack::Utils
 I think most of the type of query can be parsed by [fluent-plugin-extract_query_params](https://github.com/kentaro/fluent-plugin-extract_query_params).
