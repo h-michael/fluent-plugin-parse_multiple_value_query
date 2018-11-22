@@ -19,6 +19,12 @@ output
       "key3": [""]
     }
 ```
+## Requirements
+
+| fluent-plugin-parse_multiple_value_query | Fluentd     | Ruby   |
+|---------------------------|-------------|--------|
+| >= 2.0.0                  | >= v0.14.0  | >= 2.1 |
+| < 2.0.0                   | >= v0.12.0  | >= 1.9 |
 
 ## Installation
 

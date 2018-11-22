@@ -1,5 +1,7 @@
-module Fluent
-  class ParseMultipleValueQueryOutput < Output
+require 'fluent/plugin/output'
+
+module Fluent::Plugin
+  class ParseMultipleValueQueryOutput < Fluent::Plugin::Output
     Fluent::Plugin.register_output('parse_multiple_value_query', self)
 
     config_param :key,                :string
@@ -8,6 +10,8 @@ module Fluent
     config_param :remove_empty_array, :bool, default: false
     config_param :sub_key,            :string, default: nil
     config_param :without_host,       :bool, default: false
+
+    helpers :event_emitter
 
     def initialize
       super
@@ -29,14 +33,18 @@ module Fluent
       super
     end
 
-    def emit(tag, es, chain)
+    def multi_workers_ready?
+      true
+    end
+
+    def process(tag, es)
       es.each do |time, record|
         t = tag.dup
         new_record = parse_uri(record)
 
         t = @tag_prefix + t unless @tag_prefix.nil?
 
-        Engine.emit(t, time, new_record)
+        router.emit(t, time, new_record)
       end
       chain.next
     rescue StandardError => e
